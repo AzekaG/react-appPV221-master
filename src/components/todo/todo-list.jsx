@@ -3,8 +3,9 @@ import TodoAdd from './todo-add';
 import TodoFilter from './todo-filter';
 import TodoItems from './todo-Items';
 import list from './todoData';
-import React, { useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { nanoid } from "nanoid";
+import { TodoReducer } from "./todo-reducer";
 
 
 
@@ -13,7 +14,44 @@ import { nanoid } from "nanoid";
 
 
 const TodoList = () => {
+
+    const [tasks2, dispatch] = useReducer(TodoReducer, []);
+
+    console.log(tasks2);
+
     const [tasks, setTasks] = useState(list);
+
+    const [filter, setFilter] = useState('All');
+
+    //вызывается каждый раз когда происходит ререндер компонента
+    //
+
+    //2 - й параметр - зависимость. Это массив, если он пустой - зависимостей нет - этот useEffect вызывается один раз при загрузке страницы.
+    //этот вариант используется, когда при загрузке страницы что либо нужно инициализировать.
+    //cейчас при изменении фильтра будет вызываться юзэффект
+    //1-всенда, тогда пустой массив не указываем
+    //2- когда есть пустой массив- единожды при загрузке
+    //3- когда есть изменения чего-то, что указано (сейчас фильр)
+
+    useEffect(() => {
+        localStorage.setItem("tasks", JSON.stringify(tasks))
+    }, [tasks]);
+
+    useEffect(() => {
+        dispatch({
+            type: 'create'
+        });
+        setTasks(JSON.parse(localStorage.getItem("tasks")) || list);
+    }, []);
+
+
+
+    const filterMap = {
+        All: () => true,
+        "Done all": (task) => task.done,
+        ToDo: (task) => !task.done,
+    };
+
 
     const addTask = (title) => {
         setTasks([...tasks, {
@@ -22,6 +60,29 @@ const TodoList = () => {
             done: false
         }]);
     }
+
+    const toggleDone = (id) => {
+        const newTasks = tasks.map((task) => {
+            if (task.id === id) {
+                return { ...task, done: !task.done }
+            }
+            return task;
+        })
+
+        setTasks(newTasks);
+    }
+
+    const updateTask = (id, title) => {
+        const newTasks = tasks.map((task) => {
+            if (task.id === id) {
+                return { ...task, title }
+            }
+            return task;
+        })
+
+        setTasks(newTasks);
+    }
+
 
     const removeTask = (id) => {
         //функция фильт
@@ -53,14 +114,14 @@ const TodoList = () => {
 
 
                 <TodoAdd addTask={addTask} />
-                <TodoFilter />
+                <TodoFilter setFilter={setFilter} filterMap={filterMap} activeFilter={filter} />
 
                 <div>
                     {/* map для каждого елемента массива выполняет функцию*/}
-                    {tasks.map((task) =>
+                    {tasks.filter(filterMap[filter]).map((task) =>
                         // <TodoItems title={task.title} done={task.done} key={task.id} />
                         // <TodoItems task={task} key={task.id} />
-                        <TodoItems {...task} key={task.id} removeTask={removeTask} />
+                        <TodoItems {...task} key={task.id} removeTask={removeTask} toggleDone={toggleDone} updateTask={updateTask} />
                     )}
 
 

@@ -1,16 +1,30 @@
-.container{
+.container {
     width: 80%;
     margin: 0 auto;
-    
+
 }
-.todo-list{
+
+.todo-list {
     max-width: 250px;
 }
-.task-item{
+
+.task-item {
     display: flex;
     align-items: center;
-    gap: 10px; /*отступ когда задаем дисплэй флекс , расстояние между елементами*/
+    gap: 10px;
+    /*отступ когда задаем дисплэй флекс , расстояние между елементами*/
 }
-.task-item button{
+
+.task-item button {
     margin-left: auto;
+}
+
+.task-done {
+    text-decoration: line-through;
+}
+
+
+.active {
+    background: salmon;
+    border-radius: 10px;
 }

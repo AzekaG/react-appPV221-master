@@ -1,12 +1,15 @@
+import classNames from 'classnames';
 import React from 'react';
 
-const TodoFilter = () => {
+const TodoFilter = ({ setFilter, filterMap, activeFilter }) => {
+    const filterKeys = Object.keys(filterMap); //возврат массива ключей переданного обьекта
+
+
     return (
         <div>
-                <button>ToDo</button>
-                <button>Done</button>
-                <button>All</button>
-            </div>
+            {filterKeys.map(filter =>
+                <button className={classNames({ active: filter === activeFilter })} onClick={() => { setFilter(filter) }} key={filter}>{filter}</button>)}
+        </div>
     );
 }
 
