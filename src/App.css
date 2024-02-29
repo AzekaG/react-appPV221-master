@@ -1,0 +1,11 @@
+header {
+    background: #eee;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.theme-dark {
+    background: #333;
+    color: wheat;
+}

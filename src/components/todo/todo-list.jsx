@@ -15,11 +15,7 @@ import { TodoReducer } from "./todo-reducer";
 
 const TodoList = () => {
 
-    const [tasks2, dispatch] = useReducer(TodoReducer, []);
-
-    console.log(tasks2);
-
-    const [tasks, setTasks] = useState(list);
+    const [tasks, dispatch] = useReducer(TodoReducer, []);
 
     const [filter, setFilter] = useState('All');
 
@@ -39,9 +35,10 @@ const TodoList = () => {
 
     useEffect(() => {
         dispatch({
-            type: 'create'
-        });
-        setTasks(JSON.parse(localStorage.getItem("tasks")) || list);
+            action: 'restore',
+            payload: JSON.parse(localStorage.getItem("tasks")) || list,
+        })
+        //  setTasks(JSON.parse(localStorage.getItem("tasks")) || list);
     }, []);
 
 
@@ -54,33 +51,29 @@ const TodoList = () => {
 
 
     const addTask = (title) => {
-        setTasks([...tasks, {
-            id: nanoid(),
-            title,
-            done: false
-        }]);
+        dispatch({
+            type: 'create',
+            payload: title,
+        })
     }
 
     const toggleDone = (id) => {
-        const newTasks = tasks.map((task) => {
-            if (task.id === id) {
-                return { ...task, done: !task.done }
-            }
-            return task;
+        dispatch({
+            type: 'changeDone',
+            payload: id,
         })
 
-        setTasks(newTasks);
+        // setTasks(newTasks);
     }
 
     const updateTask = (id, title) => {
-        const newTasks = tasks.map((task) => {
-            if (task.id === id) {
-                return { ...task, title }
-            }
-            return task;
+        dispatch({
+            type: 'update',
+            payload: { id, title },
         })
 
-        setTasks(newTasks);
+
+        // setTasks(newTasks);
     }
 
 
@@ -100,8 +93,11 @@ const TodoList = () => {
        
         
         */
-        setTasks(tasks.filter(task => task.id !== id));
-
+        //  setTasks(tasks.filter(task => task.id !== id));
+        dispatch({
+            type: 'remove',
+            payload: id,
+        });
 
     }
 
